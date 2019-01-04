@@ -18,13 +18,14 @@ const _ = require('lodash');
 const { mongoose } = require('./db/mongoose');
 const { Todo } = require('./model/todo');
 const { User } = require('./model/user');
+const { authenticate } = require('./middleware/authenticate');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
-//POST todo
+//POST todos API Endpoint
 app.post('/todos', (req, res) => {
   const todo = new Todo({
     text: req.body.text
@@ -37,7 +38,7 @@ app.post('/todos', (req, res) => {
   });
 });
 
-//GET todoS
+//GET todos API Endpoint(List)
 app.get('/todos', (req, res) => {
   Todo.find().then((todos) => {
     res.send({todos});
@@ -46,7 +47,7 @@ app.get('/todos', (req, res) => {
   });
 }); 
 
-//GET todos (single)
+//GET todos API Endpoint (Single)
 app.get('/todos/:id', (req, res) => {
   const id = req.params.id;
   if(!ObjectID.isValid(id)){
@@ -62,7 +63,7 @@ app.get('/todos/:id', (req, res) => {
   });
 });
 
-//DELETE todos (single)
+//DELETE todos API Endpoint
 app.delete('/todos/:id', (req, res) => {
   const id = req.params.id;
   if(!ObjectID.isValid(id)){
@@ -77,6 +78,7 @@ app.delete('/todos/:id', (req, res) => {
   }).catch(() => res.status(400).send());
 });
 
+//PATCH todos API Endpoint
 app.patch('/todos/:id', (req, res) => {
   const id = req.params.id;
   const body = _.pick(req.body, ['text', 'completed']);
@@ -98,6 +100,26 @@ app.patch('/todos/:id', (req, res) => {
     }
     res.send({todo});
   }).catch((e) => res.status(400).send(e));
+});
+
+//POST users API Endpoint
+app.post('/users', (req, res) => {
+  const body = _.pick(req.body, ['email', 'password']);
+  const user = new User({
+    email: body.email,
+    password: body.password
+  });
+
+  user.save().then(() => {
+    return user.generateAuthToken();
+  }).then((token) => {
+    res.header('x-auth', token).send(user);
+  })
+  .catch((e) => res.status(400).send(e));
+});
+
+app.get('/users/me', authenticate, (req,res) => {
+  res.send(req.user);
 });
 
 app.listen(port, () => {
