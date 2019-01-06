@@ -35,6 +35,13 @@ const UserSchema = new mongoose.Schema({
   }]
 });
 
+//Filter the return api
+UserSchema.methods.toJSON = function(){
+  var user = this;
+  var userObject = user.toObject();
+  return _.pick(userObject, ['_id','email']);
+};
+
 //Hash password before saving
 UserSchema.pre('save', function(next){
   var user = this;
@@ -70,12 +77,24 @@ UserSchema.statics.findByToken = function(token){
   });
 };
 
-//Filter the return api
-UserSchema.methods.toJSON = function(){
-  var user = this;
-  var userObject = user.toObject();
-  return _.pick(userObject, ['_id','email']);
-};
+UserSchema.statics.findByCredentials = function(email, password){
+  const User = this;
+  return User.findOne({email}).then((user) => {
+    if(!user){
+      return Promise.reject();
+    }
+
+    return new Promise((resolved, reject) => {
+      bcrypt.compare(password, user.password, (err, res) => {
+        if(res){
+          resolved(user);
+        } else {
+          reject(err);
+        }
+      });
+    });
+  });
+}
 
 //Generate Authentication Token
 UserSchema.methods.generateAuthToken = function(){
