@@ -1,9 +1,11 @@
+//Third party modules
 const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 
+//User Schema
 const UserSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -33,6 +35,7 @@ const UserSchema = new mongoose.Schema({
   }]
 });
 
+//Hash password before saving
 UserSchema.pre('save', function(next){
   var user = this;
   if(user.isModified('password')){
@@ -48,6 +51,7 @@ UserSchema.pre('save', function(next){
   }
 });
 
+//Find User using token
 UserSchema.statics.findByToken = function(token){
   const User = this;
   let decoded;
@@ -66,12 +70,14 @@ UserSchema.statics.findByToken = function(token){
   });
 };
 
+//Filter the return api
 UserSchema.methods.toJSON = function(){
   var user = this;
   var userObject = user.toObject();
   return _.pick(userObject, ['_id','email']);
 };
 
+//Generate Authentication Token
 UserSchema.methods.generateAuthToken = function(){
   const user = this;
   const access = 'auth';
@@ -83,6 +89,8 @@ UserSchema.methods.generateAuthToken = function(){
   });
 };
 
+//Enject User-Schema to User-Model
 const User = mongoose.model('User', UserSchema);
 
+//Export User-Model
 module.exports = { User }

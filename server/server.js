@@ -118,6 +118,7 @@ app.post('/users', (req, res) => {
   .catch((e) => res.status(400).send(e));
 });
 
+//GET users/me API Endpoint
 app.get('/users/me', authenticate, (req,res) => {
   res.send(req.user);
 });
@@ -126,4 +127,5 @@ app.listen(port, () => {
   console.log(`started on port ${port}`);
 });
 
+//Export App
 module.exports = { app }

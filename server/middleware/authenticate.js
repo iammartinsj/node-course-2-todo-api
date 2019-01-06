@@ -1,5 +1,8 @@
+//Relative Modules
 const { User } = require('./../model/user');
 
+//Request Middleware
+//Authenticate user 
 const authenticate = (req,res,next) => {
   const token = req.header('x-auth');
 
@@ -15,6 +18,5 @@ const authenticate = (req,res,next) => {
   });
 }
 
-module.exports = {
-  authenticate
-}
+//Export Authenticate Function
+module.exports = { authenticate }
