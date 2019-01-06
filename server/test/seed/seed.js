@@ -33,11 +33,7 @@ const users = [{
 },{
   _id: userTwoId,
   email: 'larry.page@gmail.com',
-  password: 'abc123',
-  tokens: [{
-    access: 'auth',
-    token: jwt.sign({_id: userTwoId, access: 'auth'}, '123abc').toString()
-  }]
+  password: 'abc123'
 }];
 
 //Remove exisiting documents to datatabase
