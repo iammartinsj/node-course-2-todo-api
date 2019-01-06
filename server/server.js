@@ -25,7 +25,7 @@ const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
-//POST todos API Endpoint
+//POST Todos Endpoint
 app.post('/todos', (req, res) => {
   const todo = new Todo({
     text: req.body.text
@@ -38,7 +38,7 @@ app.post('/todos', (req, res) => {
   });
 });
 
-//GET todos API Endpoint(List)
+//GET Todos Endpoint(List)
 app.get('/todos', (req, res) => {
   Todo.find().then((todos) => {
     res.send({todos});
@@ -47,7 +47,7 @@ app.get('/todos', (req, res) => {
   });
 }); 
 
-//GET todos API Endpoint (Single)
+//GET Todos Endpoint(Single)
 app.get('/todos/:id', (req, res) => {
   const id = req.params.id;
   if(!ObjectID.isValid(id)){
@@ -63,7 +63,7 @@ app.get('/todos/:id', (req, res) => {
   });
 });
 
-//DELETE todos API Endpoint
+//DELETE Todos Endpoint
 app.delete('/todos/:id', (req, res) => {
   const id = req.params.id;
   if(!ObjectID.isValid(id)){
@@ -78,7 +78,7 @@ app.delete('/todos/:id', (req, res) => {
   }).catch(() => res.status(400).send());
 });
 
-//PATCH todos API Endpoint
+//PATCH Todos Endpoint
 app.patch('/todos/:id', (req, res) => {
   const id = req.params.id;
   const body = _.pick(req.body, ['text', 'completed']);
@@ -102,7 +102,7 @@ app.patch('/todos/:id', (req, res) => {
   }).catch((e) => res.status(400).send(e));
 });
 
-//POST users API Endpoint
+//POST Users Endpoint
 app.post('/users', (req, res) => {
   const body = _.pick(req.body, ['email', 'password']);
   const user = new User({
@@ -118,7 +118,7 @@ app.post('/users', (req, res) => {
   .catch((e) => res.status(400).send(e));
 });
 
-//POST user login API Endpoint
+//POST User login  Endpoint
 app.post('/users/login', (req, res) => {
   const body = _.pick(req.body, ['email', 'password']);
 
@@ -131,7 +131,16 @@ app.post('/users/login', (req, res) => {
   });
 });
 
-//GET users/me API Endpoint
+//Delete User Auth Token Endpoint
+app.delete('/users/me/token', authenticate, (req, res) => {
+  req.user.removeToken(req.token).then(() => {
+    res.status(200).send()
+  },(e) => {
+    res.status(400).send(e);
+  });
+});
+
+//GET Users-me  Endpoint
 app.get('/users/me', authenticate, (req,res) => {
   res.send(req.user);
 });
