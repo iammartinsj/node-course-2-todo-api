@@ -6,17 +6,6 @@ const jwt = require('jsonwebtoken');
 const { Todo } = require('./../../model/todo');
 const { User } = require('./../../model/user');
 
-//Static Todo documents
-const todos = [{
-  _id: new ObjectID(),
-  text: 'First test todo'
-},{
-  _id: new ObjectID(),
-  text: 'Second test todo',
-  completed: true,
-  completedAt: 1300
-}];
-
 //Statuc Users Id
 const userOneId = new ObjectID();
 const userTwoId = new ObjectID();
@@ -33,7 +22,24 @@ const users = [{
 },{
   _id: userTwoId,
   email: 'larry.page@gmail.com',
-  password: 'abc123'
+  password: 'abc123',
+  tokens: [{
+    access: 'auth',
+    token: jwt.sign({_id: userTwoId, access: 'auth'}, '123abc').toString()
+  }]
+}];
+
+//Static Todo documents
+const todos = [{
+  _id: new ObjectID(),
+  text: 'First test todo',
+  _creator: userOneId
+},{
+  _id: new ObjectID(),
+  text: 'Second test todo',
+  completed: true,
+  completedAt: 1300,
+  _creator: userTwoId
 }];
 
 //Remove exisiting documents to datatabase
